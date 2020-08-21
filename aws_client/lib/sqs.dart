@@ -97,8 +97,9 @@ class SqsQueue {
   }
 
   /// Receives a single message from the queue.
-  Future<SqsMessage> receiveOne({int waitSeconds}) async {
-    final messages = await receiveMessage(1, waitSeconds: waitSeconds);
+  Future<SqsMessage> receiveOne({int waitSeconds, String region}) async {
+    final messages =
+        await receiveMessage(1, waitSeconds: waitSeconds, region: region);
     if (messages.isEmpty) return null;
     return messages.first;
   }
@@ -110,7 +111,8 @@ class SqsQueue {
   /// available immediately.
   ///
   /// http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_ReceiveMessage.html
-  Future<List<SqsMessage>> receiveMessage(int number, {int waitSeconds}) async {
+  Future<List<SqsMessage>> receiveMessage(int number,
+      {int waitSeconds, String region}) async {
     assert(number > 0);
     final parameters = <String, String>{
       'Action': 'ReceiveMessage',
@@ -126,6 +128,7 @@ class SqsQueue {
       formParameters: parameters,
       credentials: _credentials,
       httpClient: _httpClient,
+      region: region,
     ).sendRequest();
     response.validateStatus();
     final xml = parse(await response.readAsString());
@@ -143,7 +146,7 @@ class SqsQueue {
   /// Delete a message from the queue by its [receiptHandle].
   ///
   /// http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_DeleteMessage.html
-  Future deleteMessage(String receiptHandle) async {
+  Future deleteMessage(String receiptHandle, {String region}) async {
     final parameters = <String, String>{
       'Action': 'DeleteMessage',
       'ReceiptHandle': receiptHandle,
@@ -155,6 +158,7 @@ class SqsQueue {
       formParameters: parameters,
       credentials: _credentials,
       httpClient: _httpClient,
+      region: region,
     ).sendRequest();
     response.validateStatus();
   }
@@ -163,7 +167,9 @@ class SqsQueue {
   ///
   /// http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_SendMessage.html
   Future sendMessage(String body,
-      {String messageGroupId, String messageDeduplicationId}) async {
+      {String messageGroupId,
+      String messageDeduplicationId,
+      String region}) async {
     final parameters = <String, String>{
       'Action': 'SendMessage',
       'MessageBody': body,
@@ -181,6 +187,7 @@ class SqsQueue {
       formParameters: parameters,
       credentials: _credentials,
       httpClient: _httpClient,
+      region: region,
     ).sendRequest();
     response.validateStatus();
   }
