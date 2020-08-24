@@ -111,8 +111,12 @@ class SqsQueue {
   /// available immediately.
   ///
   /// http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_ReceiveMessage.html
-  Future<List<SqsMessage>> receiveMessage(int number,
-      {int waitSeconds, String region}) async {
+  Future<List<SqsMessage>> receiveMessage(
+    int number, {
+    int waitSeconds,
+    String region,
+    String service,
+  }) async {
     assert(number > 0);
     final parameters = <String, String>{
       'Action': 'ReceiveMessage',
@@ -129,6 +133,7 @@ class SqsQueue {
       credentials: _credentials,
       httpClient: _httpClient,
       region: region,
+      service: service,
     ).sendRequest();
     response.validateStatus();
     final xml = parse(await response.readAsString());
@@ -146,7 +151,11 @@ class SqsQueue {
   /// Delete a message from the queue by its [receiptHandle].
   ///
   /// http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_DeleteMessage.html
-  Future deleteMessage(String receiptHandle, {String region}) async {
+  Future deleteMessage(
+    String receiptHandle, {
+    String region,
+    String service,
+  }) async {
     final parameters = <String, String>{
       'Action': 'DeleteMessage',
       'ReceiptHandle': receiptHandle,
@@ -159,6 +168,7 @@ class SqsQueue {
       credentials: _credentials,
       httpClient: _httpClient,
       region: region,
+      service: service,
     ).sendRequest();
     response.validateStatus();
   }
@@ -169,7 +179,8 @@ class SqsQueue {
   Future sendMessage(String body,
       {String messageGroupId,
       String messageDeduplicationId,
-      String region}) async {
+      String region,
+      String service}) async {
     final parameters = <String, String>{
       'Action': 'SendMessage',
       'MessageBody': body,
@@ -188,6 +199,7 @@ class SqsQueue {
       credentials: _credentials,
       httpClient: _httpClient,
       region: region,
+      service: service,
     ).sendRequest();
     response.validateStatus();
   }
