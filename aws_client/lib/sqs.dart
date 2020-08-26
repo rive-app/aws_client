@@ -170,6 +170,9 @@ class SqsQueue {
       region: region,
       service: service,
     ).sendRequest();
+    // make sure we read the response, otherwise we dont
+    // give up the file pointer to it
+    await response.readAsBytes();
     response.validateStatus();
   }
 
@@ -201,6 +204,9 @@ class SqsQueue {
       region: region,
       service: service,
     ).sendRequest();
+    // make sure we read the response, otherwise we dont
+    // give up the file pointer to it
+    await response.readAsBytes();
     response.validateStatus();
   }
 }
